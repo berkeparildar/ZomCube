@@ -4,21 +4,17 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    private List<Vector3> spawnPositions;
-    private int enemyCount;
-    public int maxEnemyCount = 10;
+    public static int enemyCount = 5;
+    private int maxEnemyCount = 5;
+    public static int powerUpCount = 1;
+    private int maxPowerUpCount = 5;
+    public GameObject enemyPrefab;
+    public GameObject powerUpPrefab;
 
-    [SerializeField] private GameObject enemyPrefab;
-    // Start is called before the first frame update
     void Start()
     {
-        enemyCount = 0;
-        spawnPositions = new List<Vector3>();
-        spawnPositions.Add(new Vector3(5,0,5));
-        spawnPositions.Add(new Vector3(25,0,5));
-        spawnPositions.Add(new Vector3(5,0,25));
-        spawnPositions.Add(new Vector3(50,0,50));
-        StartCoroutine(enemySpawn());
+        StartCoroutine(EnemySpawn());
+        StartCoroutine(PowerUpSpawn());
     }
 
     // Update is called once per frame
@@ -27,20 +23,51 @@ public class SpawnManager : MonoBehaviour
         
     }
 
-    IEnumerator enemySpawn()
+    private IEnumerator EnemySpawn()
     {
-        yield return new WaitForSeconds(3);
-        while (enemyCount < maxEnemyCount)
+        while (true)
         {
-            Instantiate(enemyPrefab, randomSpawnPoint(), Quaternion.identity);
-            enemyCount++;
-            yield return new WaitForSeconds(5);
+            if (enemyCount < maxEnemyCount)
+            {
+                Instantiate(enemyPrefab, randomSpawnPoint(true), enemyPrefab.transform.rotation);
+                enemyCount++;
+                yield return new WaitForSeconds(9);
+            }
+            else
+            {
+                yield return null;
+            }
         }
-        
     }
 
-    private Vector3 randomSpawnPoint()
+    private IEnumerator PowerUpSpawn()
     {
-        return spawnPositions[Random.Range(0, spawnPositions.Capacity - 1)];
+        while (true)
+        {
+            if (powerUpCount < maxPowerUpCount)
+            {
+                Instantiate(powerUpPrefab, randomSpawnPoint(false), powerUpPrefab.transform.rotation);
+                powerUpCount++;
+                yield return new WaitForSeconds(9);
+            }
+            else
+            {
+                yield return null;
+            }
+        }
+    }
+
+    private Vector3 randomSpawnPoint(bool isEnemy)
+    {
+        Vector3 returnVector;
+        if (isEnemy)
+        {
+            returnVector =  new Vector3(Random.Range(0,50), enemyPrefab.transform.position.y, Random.Range(0, 50));
+        }
+        else
+        {
+            returnVector =  new Vector3(Random.Range(0,50), powerUpPrefab.transform.position.y, Random.Range(0, 50));
+        }
+        return returnVector;
     }
 }

@@ -1,7 +1,4 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -9,8 +6,8 @@ public class Player : MonoBehaviour
     private CharacterController _charController;
     private bool _isJumping;
     private Vector3 _currentJumpVelocity;
-    private Camera _Camera;
     public float health = 100;
+    public float speed = 4;
     
 
     // Start is called before the first frame update
@@ -36,7 +33,7 @@ public class Player : MonoBehaviour
     private void Movement()
     {
         var walkInput = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-        var currentSpeed = walkInput * 4;
+        var currentSpeed = walkInput * speed;
         var moveVelocity = transform.TransformDirection(currentSpeed);
         if (Input.GetButtonDown("Jump") && _charController.isGrounded)
         {
@@ -59,6 +56,30 @@ public class Player : MonoBehaviour
         else
         {
             _charController.SimpleMove(moveVelocity);
+        }
+    }
+    
+    private IEnumerator SpeedPowerUp()
+    {
+        speed = 8;
+        yield return new WaitForSeconds(5);
+        speed = 4;
+    }
+
+    public void ActivateSpeedPowerUp()
+    {
+        StartCoroutine(SpeedPowerUp());
+    }
+
+    public void ActivateHealthPowerUp()
+    {
+        if (health <= 80)
+        {
+            health += 20;
+        }
+        else
+        {
+            health = 100;
         }
     }
 }
