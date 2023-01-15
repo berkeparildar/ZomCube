@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class Player : MonoBehaviour
     private Vector3 _currentJumpVelocity;
     public float health = 100;
     public float speed = 4;
+    public Text healthText;
     
 
     // Start is called before the first frame update
@@ -46,7 +48,7 @@ public class Player : MonoBehaviour
 
         if (_isJumping)
         {
-            _charController.Move((moveVelocity + _currentJumpVelocity) * Time.deltaTime);
+            _charController.Move(new Vector3(moveVelocity.x, _currentJumpVelocity.y, moveVelocity.z) * Time.deltaTime);
             _currentJumpVelocity += Physics.gravity * Time.deltaTime;
             if (_charController.isGrounded)
             {
@@ -82,4 +84,11 @@ public class Player : MonoBehaviour
             health = 100;
         }
     }
+
+    public void TakeDamage()
+    {
+        health -= 20;
+        healthText.text = health.ToString();
+    }
+    
 }

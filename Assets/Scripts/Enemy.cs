@@ -17,13 +17,30 @@ public class Enemy : MonoBehaviour
         player = GameObject.Find("Player");
         startingPos = transform.position;
         StartCoroutine(Patrol());
+        StartCoroutine(AttackInRange());
     }
 
     // Update is called once per frame
     void Update()
     {
-        lookForTarget();   
-    } 
+        lookForTarget();
+    }
+
+    private IEnumerator AttackInRange()
+    {
+        while (true)
+        {
+            if (Vector3.Distance(player.transform.position, transform.position) < 2.5)
+            {
+                player.GetComponent<Player>().TakeDamage();
+                yield return new WaitForSeconds(1);
+            }
+            else
+            {
+                yield return null;
+            }
+        }
+    }
     
     private void lookForTarget()
     {
@@ -51,15 +68,6 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision other)
-    {
-        if (other.gameObject.name == "Player")
-        {
-            Debug.Log("temas");
-            Attack();
-        }
-    }
-
     private void Chase()
     {
         Vector3 enemyMove = new Vector3(0, 0, 2);
@@ -71,7 +79,7 @@ public class Enemy : MonoBehaviour
 
     private void Attack()
     {
-        player.GetComponent<Player>().health -= 20;
+        player.GetComponent<Player>().TakeDamage();
     }
 
     public void TakeDamage(int damage)

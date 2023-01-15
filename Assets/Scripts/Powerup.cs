@@ -11,12 +11,19 @@ public class Powerup : MonoBehaviour
     public Material damageMat;
     public Material speedMat;
     private int random;
+    public List<Weapon> weaponList;
     private Weapon _weapon;
     private List<Material> matList;
     // Start is called before the first frame update
     void Start()
     {
-        _weapon = GameObject.Find("Weapon").GetComponent<Weapon>();
+        for (int i = 0; i < weaponList.Count; i++)
+        {
+            if (weaponList[i].gameObject.activeSelf)
+            {
+                _weapon = weaponList[i];
+            }
+        }
         matList = new List<Material>();
         matList.Add(healthMat); // 0
         matList.Add(speedMat); // 1
