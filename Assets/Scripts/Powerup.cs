@@ -6,24 +6,20 @@ using Random = UnityEngine.Random;
 
 public class Powerup : MonoBehaviour
 {
-
+    private GameObject _player;
     public Material healthMat;
     public Material damageMat;
     public Material speedMat;
     private int random;
-    public List<Weapon> weaponList;
+    public Weapon[] weaponList;
     private Weapon _weapon;
     private List<Material> matList;
     // Start is called before the first frame update
     void Start()
     {
-        for (int i = 0; i < weaponList.Count; i++)
-        {
-            if (weaponList[i].gameObject.activeSelf)
-            {
-                _weapon = weaponList[i];
-            }
-        }
+        _player = GameObject.Find("Player");
+        weaponList = _player.transform.GetChild(0).GetComponentsInChildren<Weapon>(includeInactive: true);
+        
         matList = new List<Material>();
         matList.Add(healthMat); // 0
         matList.Add(speedMat); // 1
@@ -60,8 +56,14 @@ public class Powerup : MonoBehaviour
                     Destroy(gameObject);
                     break;
                 case 2:
-                    Debug.Log("case 2");
-                   _weapon.ActivateDamagePowerUp();
+                    for (int i = 0; i < weaponList.Length; i++)
+                    {
+                        if (weaponList[i].gameObject.activeSelf)
+                        {
+                            _weapon = weaponList[i];
+                        }
+                    }
+                    _weapon.ActivateDamagePowerUp();
                     SpawnManager.powerUpCount--;
                     Destroy(gameObject);
                     break;

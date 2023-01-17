@@ -9,12 +9,13 @@ public class Player : MonoBehaviour
     private Vector3 _currentJumpVelocity;
     public float health = 100;
     public float speed = 4;
-    public Text healthText;
+    private Text healthText;
     
 
     // Start is called before the first frame update
     void Start()
     {
+        healthText = GameObject.Find("health_Text").GetComponent<Text>();
         _charController = GetComponent<CharacterController>();
     }
 

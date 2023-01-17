@@ -1,43 +1,54 @@
+using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class Weapon : MonoBehaviour
 {
-    public GameObject _bullet;
-    public int _bulletCount;
-    public Text bulletText;
+    public GameObject bullet;
+    public int bulletCount;
+    private static Text _bulletText;
     public bool isPistol;
     public bool isMachineGun;
     public bool isShotgun;
-    private int damage;
+    public Sprite pistolIcon;
+    public Sprite machineGunIcon;
+    public Sprite shotgunIcon;
+    private int _damage;
+    private GameObject _barTiles;
+    private Text[] _actionNumbers;
 
     public int Damage
     {
-        get => damage;
-        set => damage = value;
+        get => _damage;
+        set => _damage = value;
     }
 
     // Start is called before the first frame update
     void Start()
     {
+        _barTiles = GameObject.Find("bar_tiles");
+        _actionNumbers = _barTiles.GetComponentsInChildren<Text>();
+        _bulletText = GameObject.Find("bullet_text").GetComponent<Text>();
         if (isPistol)
         {
-            damage = 15;
-            _bulletCount = 7;
-            bulletText.text = _bulletCount.ToString();
+            _damage = 35;
+            bulletCount = 7;
+            _bulletText.text = bulletCount.ToString();
         }
         else if (isShotgun)
         {
-            damage = 25;
-            _bulletCount = 5;
+            _damage = 25;
+            bulletCount = 25;
+            _bulletText.text = bulletCount.ToString();
         }
         else if (isMachineGun)
         {
-            damage = 30;
-            _bulletCount = 30;
+            _damage = 25;
+            bulletCount = 30;
+            _bulletText.text = bulletCount.ToString();
         }
-
         StartCoroutine(FireAutomatic());
     }
 
@@ -46,14 +57,14 @@ public class Weapon : MonoBehaviour
     {
         if (isPistol)
         {
-            if (_bulletCount > 0)
+            if (bulletCount > 0)
             {
                 FireSingleBullet();
             }
         }
         else if (isShotgun)
         {
-            if (_bulletCount > 0)
+            if (bulletCount > 0)
             {
                 FireShotgunShell();
             }
@@ -65,11 +76,11 @@ public class Weapon : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
-            var position = transform.position;
-            Instantiate(_bullet, new Vector3(position.x, position.y, position.z),
+            var position = transform.GetChild(0).GetChild(0).position;
+            Instantiate(bullet, new Vector3(position.x, position.y, position.z),
                 transform.parent.rotation);
-            _bulletCount--;
-            bulletText.text = _bulletCount.ToString();
+            bulletCount--;
+            _bulletText.text = bulletCount.ToString();
         }
     }
 
@@ -81,17 +92,17 @@ public class Weapon : MonoBehaviour
             Quaternion rot_1 = Quaternion.Euler(r.x, r.y + 5, r.z);
             Quaternion rot_2 = Quaternion.Euler(r.x, r.y - 5, r.z);
             Quaternion rot_3 = Quaternion.Euler(r.x + 3, r.y, r.z);
-            var position = transform.position;
-            Instantiate(_bullet, new Vector3(position.x, position.y, position.z),
+            var position = transform.GetChild(0).GetChild(0).position;
+            Instantiate(bullet, new Vector3(position.x, position.y, position.z),
                 rot_1);
-            Instantiate(_bullet, new Vector3(position.x, position.y, position.z),
+            Instantiate(bullet, new Vector3(position.x, position.y, position.z),
                 transform.parent.rotation);
-            Instantiate(_bullet, new Vector3(position.x, position.y, position.z),
+            Instantiate(bullet, new Vector3(position.x, position.y, position.z),
                 rot_2);
-            Instantiate(_bullet, new Vector3(position.x, position.y, position.z),
+            Instantiate(bullet, new Vector3(position.x, position.y, position.z),
                 rot_3);
-            _bulletCount--;
-            bulletText.text = _bulletCount.ToString();
+            bulletCount--;
+            _bulletText.text = bulletCount.ToString();
         }
     }
 
@@ -99,13 +110,13 @@ public class Weapon : MonoBehaviour
     {
         while (true)
         {
-            if (isMachineGun && _bulletCount > 0 && Input.GetKey(KeyCode.Mouse1))
+            if (isMachineGun && bulletCount > 0 && Input.GetKey(KeyCode.Mouse1))
             {
-                var position = transform.position;
-                    Instantiate(_bullet, new Vector3(position.x, position.y, position.z),
+                var position = transform.GetChild(0).GetChild(0).position;
+                    Instantiate(bullet, new Vector3(position.x, position.y, position.z),
                         transform.parent.rotation);
-                    _bulletCount--;
-                    bulletText.text = _bulletCount.ToString();
+                    bulletCount--;
+                    _bulletText.text = bulletCount.ToString();
                     yield return new WaitForSeconds(0.1f);
             }
             else
@@ -117,26 +128,72 @@ public class Weapon : MonoBehaviour
     
     private IEnumerator DamagePowerUp()
     {
-        damage += 20;
+        _damage += 20;
         yield return new WaitForSeconds(5);
-        damage -= 20;
+        _damage -= 20;
     }
 
     public void ActivateDamagePowerUp()
     {
         StartCoroutine(DamagePowerUp());
     }
-    
+
+    private void OnEnable()
+    {
+        if (isMachineGun)
+        {
+            _bulletText.text = bulletCount.ToString();
+            StartCoroutine(FireAutomatic());
+        }
+        else if (isPistol)
+        {
+            _bulletText.text = bulletCount.ToString();
+
+        }
+        else if (isShotgun)
+        {
+            _bulletText.text = bulletCount.ToString();
+        }
+    }
+
     private void SwitchWeapons()
     {
-        if (Input.GetKeyDown(KeyCode.F1))
+        if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             if (isMachineGun || isShotgun)
             {
-                if (isPistol)
+                transform.parent.GetChild(0).gameObject.SetActive(true);
+                foreach (var number in _actionNumbers)
                 {
-                    gameObject.SetActive(true);
+                    number.color = Color.white;
                 }
+                _actionNumbers[0].color = Color.yellow;
+                gameObject.SetActive(false);
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            if (isPistol || isShotgun)
+            {
+                transform.parent.GetChild(1).gameObject.SetActive(true);
+                foreach (var number in _actionNumbers)
+                {
+                    number.color = Color.white;
+                }
+                _actionNumbers[1].color = Color.yellow;
+                gameObject.SetActive(false);
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            if (isPistol || isMachineGun)
+            {
+                transform.parent.GetChild(2).gameObject.SetActive(true);
+                foreach (var number in _actionNumbers)
+                {
+                    number.color = Color.white;
+                }
+                _actionNumbers[2].color = Color.yellow;
                 gameObject.SetActive(false);
             }
         }

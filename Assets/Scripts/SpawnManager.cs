@@ -29,9 +29,10 @@ public class SpawnManager : MonoBehaviour
         {
             if (enemyCount < maxEnemyCount)
             {
+                yield return new WaitForSeconds(4);
                 Instantiate(enemyPrefab, randomSpawnPoint(true), enemyPrefab.transform.rotation);
                 enemyCount++;
-                yield return new WaitForSeconds(9);
+                yield return new WaitForSeconds(5);
             }
             else
             {

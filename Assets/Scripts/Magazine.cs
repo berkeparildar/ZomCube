@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class Magazine : MonoBehaviour
 {
-    private GameObject player;
-    private Weapon[] weaponList;
+    private GameObject _player;
+    private Weapon[] _weaponList;
     public Text bulletText;
     private Weapon _weapon;
     
@@ -14,10 +14,10 @@ public class Magazine : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        bulletText = GameObject.Find("Canvas").transform.GetChild(0).GetComponent<Text>();
-        player = GameObject.Find("Player");
-        weaponList = player.transform.GetChild(0).GetComponentsInChildren<Weapon>();
-
+        bulletText = GameObject.Find("bullet_text").GetComponent<Text>();
+        _player = GameObject.Find("Player");
+        _weaponList = _player.transform.GetChild(0).GetComponentsInChildren<Weapon>(includeInactive: true);
+        Debug.Log(_weaponList.Length);
     }
 
     // Update is called once per frame
@@ -28,31 +28,30 @@ public class Magazine : MonoBehaviour
 
     private void CheckPlayerRange()
     {
-        if (Vector3.Distance(player.transform.position, transform.position) < 3)
+        if (Vector3.Distance(_player.transform.position, transform.position) < 3)
         {
-            for (int i = 0; i < weaponList.Length; i++)
+            for (int i = 0; i < _weaponList.Length; i++)
             {
-                if (weaponList[i].gameObject.activeSelf)
+                if (_weaponList[i].gameObject.activeInHierarchy)
                 {
-                    _weapon = weaponList[i];
+                    _weapon = _weaponList[i];
                 }
             }
-
             if (_weapon.isPistol)
             {
-                _weapon._bulletCount = 7;
+                _weapon.bulletCount = 7;
                 bulletText.text = 7.ToString();
                 Destroy(gameObject);
             }
             else if (_weapon.isMachineGun)
             {
-                _weapon._bulletCount = 30;
+                _weapon.bulletCount = 30;
                 bulletText.text = 30.ToString();
                 Destroy(gameObject);
             }
             else if (_weapon.isShotgun)
             {
-                _weapon._bulletCount = 5;
+                _weapon.bulletCount = 5;
                 bulletText.text = 5.ToString();
                 Destroy(gameObject);
             }

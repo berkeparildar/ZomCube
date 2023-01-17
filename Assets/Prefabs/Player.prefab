@@ -19,7 +19,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &39530840877905644
 Transform:
   m_ObjectHideFlags: 0
@@ -110,11 +110,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32bf588050f10594698c3d0f3206a526, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _bullet: {fileID: 4065642582366385671, guid: 87b045342cf929740992789755493b1d, type: 3}
-  bulletText: {fileID: 0}
-  isPistol: 1
+  bullet: {fileID: 4065642582366385671, guid: 87b045342cf929740992789755493b1d, type: 3}
+  bulletCount: 0
+  isPistol: 0
   isMachineGun: 0
-  isShotgun: 0
+  isShotgun: 1
+  pistolIcon: {fileID: 21300014, guid: 0bd96f6f4899f644ea1ffd9b4735a5e6, type: 3}
+  machineGunIcon: {fileID: 21300046, guid: 0bd96f6f4899f644ea1ffd9b4735a5e6, type: 3}
+  shotgunIcon: {fileID: 21300012, guid: 0bd96f6f4899f644ea1ffd9b4735a5e6, type: 3}
 --- !u!1 &7757004888921406735
 GameObject:
   m_ObjectHideFlags: 0
@@ -221,7 +224,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7757004889513582725
 Transform:
   m_ObjectHideFlags: 0
@@ -312,11 +315,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32bf588050f10594698c3d0f3206a526, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _bullet: {fileID: 4065642582366385671, guid: 87b045342cf929740992789755493b1d, type: 3}
-  bulletText: {fileID: 0}
+  bullet: {fileID: 4065642582366385671, guid: 87b045342cf929740992789755493b1d, type: 3}
+  bulletCount: 0
   isPistol: 1
   isMachineGun: 0
   isShotgun: 0
+  pistolIcon: {fileID: 21300014, guid: 0bd96f6f4899f644ea1ffd9b4735a5e6, type: 3}
+  machineGunIcon: {fileID: 21300046, guid: 0bd96f6f4899f644ea1ffd9b4735a5e6, type: 3}
+  shotgunIcon: {fileID: 21300012, guid: 0bd96f6f4899f644ea1ffd9b4735a5e6, type: 3}
 --- !u!1 &7757004890156872024
 GameObject:
   m_ObjectHideFlags: 0
@@ -523,8 +529,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32bf588050f10594698c3d0f3206a526, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _bullet: {fileID: 4065642582366385671, guid: 87b045342cf929740992789755493b1d, type: 3}
-  bulletText: {fileID: 0}
-  isPistol: 1
-  isMachineGun: 0
+  bullet: {fileID: 4065642582366385671, guid: 87b045342cf929740992789755493b1d, type: 3}
+  bulletCount: 0
+  isPistol: 0
+  isMachineGun: 1
   isShotgun: 0
+  pistolIcon: {fileID: 21300014, guid: 0bd96f6f4899f644ea1ffd9b4735a5e6, type: 3}
+  machineGunIcon: {fileID: 21300046, guid: 0bd96f6f4899f644ea1ffd9b4735a5e6, type: 3}
+  shotgunIcon: {fileID: 21300012, guid: 0bd96f6f4899f644ea1ffd9b4735a5e6, type: 3}

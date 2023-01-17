@@ -6,19 +6,19 @@ public class Bullet : MonoBehaviour
     public float bulletSpeed = 35;
     private float _distance;
     private Vector3 _currentPosition;
-    private Weapon[] weaponList;
+    private Weapon[] _weaponList;
     private Weapon _weapon;
     private GameObject _player;
 
     void Start()
     {
         _player = GameObject.Find("Player");
-        weaponList = _player.transform.GetChild(0).GetComponentsInChildren<Weapon>();
-        for (int i = 0; i < weaponList.Length; i++)
+        _weaponList = _player.transform.GetChild(0).GetComponentsInChildren<Weapon>(includeInactive: true);
+        for (int i = 0; i < _weaponList.Length; i++)
         {
-            if (weaponList[i].gameObject.activeSelf)
+            if (_weaponList[i].gameObject.activeSelf)
             {
-                _weapon = weaponList[i];
+                _weapon = _weaponList[i];
             }
         }
         _currentPosition = transform.position;
@@ -41,7 +41,7 @@ public class Bullet : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Enemy")
+        if (other.gameObject.CompareTag($"Enemy"))
         {
             other.gameObject.GetComponent<Enemy>().TakeDamage(_weapon.Damage);
             Destroy(gameObject);

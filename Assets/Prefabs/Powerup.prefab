@@ -110,6 +110,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95ece2ff91d3b994292643729749b565, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 7757004890156872024, guid: 1d6af407601fc7b44843779e0b720391, type: 3}
   healthMat: {fileID: 2100000, guid: e3e44b9e34b983c4795a9bb917c86777, type: 2}
   damageMat: {fileID: 2100000, guid: 2232dee2f8b059f448dd727de8451cbd, type: 2}
   speedMat: {fileID: 2100000, guid: 9490de1a5dd50744a93066fa6273905d, type: 2}
+  weaponList: []
