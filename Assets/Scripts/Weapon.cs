@@ -12,6 +12,8 @@ public class Weapon : MonoBehaviour
     public bool isPistol;
     public bool isMachineGun;
     public bool isShotgun;
+    public static bool machineGunUnlock = false;
+    public static bool shotGunUnlock = false;
     public Sprite pistolIcon;
     public Sprite machineGunIcon;
     public Sprite shotgunIcon;
@@ -110,7 +112,7 @@ public class Weapon : MonoBehaviour
     {
         while (true)
         {
-            if (isMachineGun && bulletCount > 0 && Input.GetKey(KeyCode.Mouse1))
+            if (machineGunUnlock && isMachineGun && bulletCount > 0 && Input.GetKey(KeyCode.Mouse1))
             {
                 var position = transform.GetChild(0).GetChild(0).position;
                     Instantiate(bullet, new Vector3(position.x, position.y, position.z),
@@ -171,7 +173,7 @@ public class Weapon : MonoBehaviour
                 gameObject.SetActive(false);
             }
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        else if (Input.GetKeyDown(KeyCode.Alpha2) && machineGunUnlock)
         {
             if (isPistol || isShotgun)
             {
@@ -184,7 +186,7 @@ public class Weapon : MonoBehaviour
                 gameObject.SetActive(false);
             }
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        else if (Input.GetKeyDown(KeyCode.Alpha3) && shotGunUnlock)
         {
             if (isPistol || isMachineGun)
             {

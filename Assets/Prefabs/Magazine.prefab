@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8508087612009898058}
   - component: {fileID: 8508087612009898057}
   - component: {fileID: 8508087612009898056}
-  - component: {fileID: 8508087612009898061}
+  - component: {fileID: 1323976139449525888}
   m_Layer: 0
   m_Name: Magazine
   m_TagString: Untagged
@@ -115,7 +115,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &8508087612009898061
+--- !u!114 &1323976139449525888
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -124,11 +124,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8508087612009898055}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95094a674c7925a499d9400f97a34964, type: 3}
+  m_Script: {fileID: 11500000, guid: 1947453fc75a31a4ca58d5207b67ca8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weaponList:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  bulletText: {fileID: 0}
+  isMagazine: 1
