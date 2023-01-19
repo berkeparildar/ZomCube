@@ -36,7 +36,7 @@ public class Bullet : MonoBehaviour
 
     private void Movement()
     {
-        transform.Translate(new Vector3(0, 0, 1) * (bulletSpeed * Time.deltaTime));
+        transform.Translate(new Vector3(-0.05f, +0.01f, 1) * (bulletSpeed * Time.deltaTime));
     }
 
     private void OnTriggerEnter(Collider other)
@@ -44,6 +44,12 @@ public class Bullet : MonoBehaviour
         if (other.gameObject.CompareTag($"Enemy"))
         {
             other.gameObject.GetComponent<Enemy>().TakeDamage(_weapon.Damage);
+            Destroy(gameObject);
+        }
+        else if (other.gameObject.CompareTag($"Boss"))
+        {
+            other.gameObject.GetComponent<Boss>().TakeDamage(_weapon.Damage);
+            Debug.Log("hit");
             Destroy(gameObject);
         }
     }

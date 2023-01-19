@@ -12,14 +12,21 @@ public class Weapon : MonoBehaviour
     public bool isPistol;
     public bool isMachineGun;
     public bool isShotgun;
+    public bool isHealthKit;
     public static bool machineGunUnlock = false;
     public static bool shotGunUnlock = false;
+    public static bool hasOneHealthKit = false;
+    public static bool hasTwoHealthKit = false;
     public Sprite pistolIcon;
     public Sprite machineGunIcon;
     public Sprite shotgunIcon;
     private int _damage;
     private GameObject _barTiles;
     private Text[] _actionNumbers;
+    private Text powerUpUI;
+    private Player _player;
+    private GameObject _healthKitIcon;
+    private GameObject _healthKitIconTwo;
 
     public int Damage
     {
@@ -30,8 +37,12 @@ public class Weapon : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        powerUpUI = GameObject.Find("power_up_UI").GetComponent<Text>();
         _barTiles = GameObject.Find("bar_tiles");
+        _healthKitIcon = GameObject.Find("bar_tile_4").transform.GetChild(1).gameObject;
+        _healthKitIconTwo = GameObject.Find("bar_tile_5").transform.GetChild(1).gameObject;
         _actionNumbers = _barTiles.GetComponentsInChildren<Text>();
+        _player = GameObject.Find("Player").GetComponent<Player>();
         _bulletText = GameObject.Find("bullet_text").GetComponent<Text>();
         if (isPistol)
         {
@@ -41,7 +52,7 @@ public class Weapon : MonoBehaviour
         }
         else if (isShotgun)
         {
-            _damage = 25;
+            _damage = 35;
             bulletCount = 25;
             _bulletText.text = bulletCount.ToString();
         }
@@ -71,12 +82,16 @@ public class Weapon : MonoBehaviour
                 FireShotgunShell();
             }
         }
+        else if (isHealthKit)
+        {
+            UseHealthKit();
+        }
         SwitchWeapons();
     }
 
     private void FireSingleBullet()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse1))
+        if (Input.GetKeyDown(KeyCode.Mouse1) && isPistol)
         {
             var position = transform.GetChild(0).GetChild(0).position;
             Instantiate(bullet, new Vector3(position.x, position.y, position.z),
@@ -85,10 +100,42 @@ public class Weapon : MonoBehaviour
             _bulletText.text = bulletCount.ToString();
         }
     }
+    
+    private void UseHealthKit()
+    {
+        if (Input.GetKeyDown(KeyCode.Mouse1) && isHealthKit)
+        {
+            _player.ActivateHealthPowerUp();
+            if (hasTwoHealthKit)
+            {
+                _healthKitIconTwo.SetActive(false);
+                hasTwoHealthKit = false;
+                transform.parent.GetChild(0).gameObject.SetActive(true);
+                foreach (var number in _actionNumbers)
+                {
+                    number.color = Color.white;
+                }
+                _actionNumbers[0].color = Color.yellow;
+                gameObject.SetActive(false);
+            }
+            else if (hasOneHealthKit)
+            {
+                _healthKitIcon.SetActive(false);
+                hasOneHealthKit = false;
+                transform.parent.GetChild(0).gameObject.SetActive(true);
+                foreach (var number in _actionNumbers)
+                {
+                    number.color = Color.white;
+                }
+                _actionNumbers[0].color = Color.yellow;
+                gameObject.SetActive(false);
+            }
+        }
+    }
 
     private void FireShotgunShell()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse1))
+        if (shotGunUnlock && Input.GetKeyDown(KeyCode.Mouse1))
         {
             Vector3 r = transform.parent.rotation.eulerAngles;
             Quaternion rot_1 = Quaternion.Euler(r.x, r.y + 5, r.z);
@@ -131,8 +178,11 @@ public class Weapon : MonoBehaviour
     private IEnumerator DamagePowerUp()
     {
         _damage += 20;
+        powerUpUI.color = new Color(148, 0, 255);
+        powerUpUI.text = "Damage UP!";
         yield return new WaitForSeconds(5);
         _damage -= 20;
+        powerUpUI.text = "";
     }
 
     public void ActivateDamagePowerUp()
@@ -142,6 +192,7 @@ public class Weapon : MonoBehaviour
 
     private void OnEnable()
     {
+        _bulletText = GameObject.Find("bullet_text").GetComponent<Text>();
         if (isMachineGun)
         {
             _bulletText.text = bulletCount.ToString();
@@ -150,7 +201,6 @@ public class Weapon : MonoBehaviour
         else if (isPistol)
         {
             _bulletText.text = bulletCount.ToString();
-
         }
         else if (isShotgun)
         {
@@ -162,7 +212,7 @@ public class Weapon : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            if (isMachineGun || isShotgun)
+            if (isMachineGun || isShotgun || isHealthKit)
             {
                 transform.parent.GetChild(0).gameObject.SetActive(true);
                 foreach (var number in _actionNumbers)
@@ -175,7 +225,7 @@ public class Weapon : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2) && machineGunUnlock)
         {
-            if (isPistol || isShotgun)
+            if (isPistol || isShotgun ||isHealthKit)
             {
                 transform.parent.GetChild(1).gameObject.SetActive(true);
                 foreach (var number in _actionNumbers)
@@ -188,7 +238,7 @@ public class Weapon : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3) && shotGunUnlock)
         {
-            if (isPistol || isMachineGun)
+            if (isPistol || isMachineGun || isHealthKit)
             {
                 transform.parent.GetChild(2).gameObject.SetActive(true);
                 foreach (var number in _actionNumbers)
@@ -196,6 +246,32 @@ public class Weapon : MonoBehaviour
                     number.color = Color.white;
                 }
                 _actionNumbers[2].color = Color.yellow;
+                gameObject.SetActive(false);
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha4) && hasOneHealthKit)
+        {
+            if (isPistol || isMachineGun || isShotgun)
+            {
+                transform.parent.GetChild(3).gameObject.SetActive(true);
+                foreach (var number in _actionNumbers)
+                {
+                    number.color = Color.white;
+                }
+                _actionNumbers[3].color = Color.yellow;
+                gameObject.SetActive(false);
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha5) && hasTwoHealthKit)
+        {
+            if (isPistol || isMachineGun || isShotgun)
+            {
+                transform.parent.GetChild(4).gameObject.SetActive(true);
+                foreach (var number in _actionNumbers)
+                {
+                    number.color = Color.white;
+                }
+                _actionNumbers[4].color = Color.yellow;
                 gameObject.SetActive(false);
             }
         }

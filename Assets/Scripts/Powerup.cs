@@ -19,7 +19,7 @@ public class Powerup : MonoBehaviour
     {
         _player = GameObject.Find("Player");
         weaponList = _player.transform.GetChild(0).GetComponentsInChildren<Weapon>(includeInactive: true);
-        
+        StartCoroutine(Bounce());
         matList = new List<Material>();
         matList.Add(healthMat); // 0
         matList.Add(speedMat); // 1
@@ -36,6 +36,23 @@ public class Powerup : MonoBehaviour
             case 2:
                 gameObject.GetComponent<MeshRenderer>().material = damageMat;
                 break;
+        }
+    }
+
+    private IEnumerator Bounce()
+    {
+        while (true)
+        {
+            for (float durationSoFar = 0; durationSoFar < 2.0f; durationSoFar += Time.deltaTime)
+            {
+                transform.Translate(new Vector3(0, 0.5f, 0) * Time.deltaTime);
+                yield return null;
+            }
+            for (float durationSoFar = 0; durationSoFar < 2.0f; durationSoFar += Time.deltaTime)
+            {
+                transform.Translate(new Vector3(0, -0.5f, 0) * Time.deltaTime);
+                yield return null;
+            }
         }
     }
 
