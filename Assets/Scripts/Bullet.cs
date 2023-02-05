@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,7 +10,7 @@ public class Bullet : MonoBehaviour
     private Weapon[] _weaponList;
     private Weapon _weapon;
     private GameObject _player;
-
+    private AudioSource _audioSource;
     void Start()
     {
         _player = GameObject.Find("Player");
@@ -33,6 +34,15 @@ public class Bullet : MonoBehaviour
         }
         Movement();
     }
+    
+    // ReSharper disable Unity.PerformanceAnalysis
+    private IEnumerator DelayDestroy()
+    {
+        GetComponent<MeshRenderer>().enabled = false;
+        GetComponent<SphereCollider>().enabled = false;
+        yield return new WaitForSeconds(2);
+        Destroy(gameObject);
+    }
 
     private void Movement()
     {
@@ -44,13 +54,13 @@ public class Bullet : MonoBehaviour
         if (other.gameObject.CompareTag($"Enemy"))
         {
             other.gameObject.GetComponent<Enemy>().TakeDamage(_weapon.Damage);
-            Destroy(gameObject);
+            StartCoroutine(DelayDestroy());
         }
         else if (other.gameObject.CompareTag($"Boss"))
         {
             other.gameObject.GetComponent<Boss>().TakeDamage(_weapon.Damage);
             Debug.Log("hit");
-            Destroy(gameObject);
+            StartCoroutine(DelayDestroy());
         }
     }
 }

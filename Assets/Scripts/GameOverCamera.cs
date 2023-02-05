@@ -5,25 +5,31 @@ using UnityEngine.SceneManagement;
 
 public class GameOverCamera : MonoBehaviour
 {
-    private GameObject health;
-    private GameObject bullet;
-    private GameObject action;
-    private GameObject gameOver;
-    private GameObject boss;
+    private GameObject _health;
+    private GameObject _bullet;
+    private GameObject _action;
+    private GameObject _gameOver;
+    private GameObject _boss;
+    private GameObject _player;
+    private GameObject _bossUI;
+
     // Start is called before the first frame update
     void Start()
     {
-        health = GameObject.Find("health_UI");
-        bullet = GameObject.Find("bullet_UI");
-        action = GameObject.Find("action_bar");
-        boss = GameObject.Find("boss_UI");
-        gameOver = GameObject.Find("Canvas").transform.GetChild(8).gameObject;
-        health.SetActive(false);
-        bullet.SetActive(false);
-        action.SetActive(false);
-        if (!boss.GetComponent<Boss>().isDead)
+        _health = GameObject.Find("health_UI");
+        _bullet = GameObject.Find("bullet_UI");
+        _action = GameObject.Find("action_bar");
+        _bossUI = GameObject.Find("boss_UI");
+        _boss = GameObject.Find("Boss");
+        _player = GameObject.Find("Player");
+        _gameOver = GameObject.Find("Canvas").transform.GetChild(8).gameObject;
+        _health.SetActive(false);
+        _bullet.SetActive(false);
+        _action.SetActive(false);
+        _player.GetComponent<MouseMovement>().enabled = false;
+        if (_boss.GetComponent<Boss>().hasTarget)
         {
-            boss.SetActive(false);
+            _bossUI.SetActive(false);
         }
         StartCoroutine(GameOverScreen());
     }
@@ -48,9 +54,9 @@ public class GameOverCamera : MonoBehaviour
     {
         while (true)
         {
-            gameOver.SetActive(true);
+            _gameOver.SetActive(true);
             yield return new WaitForSeconds(1);
-            gameOver.SetActive(false);
+            _gameOver.SetActive(false);
             yield return new WaitForSeconds(1);
         }
     }

@@ -8,23 +8,25 @@ public class Player : MonoBehaviour
     private bool _isJumping;
     private Vector3 _currentJumpVelocity;
     public float health = 100;
-    private float speed = 8;
-    private Text healthText;
+    private float _speed = 8;
+    private Text _healthText;
     private ChallengeMode _challengeMode;
     public bool isAlive = true;
-    private Text powerUpUI;
+    private Text _powerUpUI;
     public bool isPoisoned;
-    private int poisonMultiplier = 0;
-    private Boss boss;
+    private int _poisonMultiplier = 0;
+    private Boss _boss;
+    private AudioSource _audioSource;
     
 
     // Start is called before the first frame update
     void Start()
     {
-        boss = GameObject.Find("Boss").GetComponent<Boss>();
-        powerUpUI = GameObject.Find("power_up_UI").GetComponent<Text>();
+        _boss = GameObject.Find("Boss").GetComponent<Boss>();
+        _audioSource = GetComponent<AudioSource>();
+        _powerUpUI = GameObject.Find("power_up_UI").GetComponent<Text>();
         _challengeMode = GameObject.Find("challenge_start").GetComponent<ChallengeMode>();
-        healthText = GameObject.Find("health_Text").GetComponent<Text>();
+        _healthText = GameObject.Find("health_Text").GetComponent<Text>();
         _charController = GetComponent<CharacterController>();
     }
 
@@ -32,7 +34,7 @@ public class Player : MonoBehaviour
     void Update()
     {
         Movement();
-        checkAlive();
+        CheckAlive();
     }
 
     private IEnumerator PoisonDamage()
@@ -41,16 +43,16 @@ public class Player : MonoBehaviour
         {
             if (isPoisoned)
             {
-                if (boss.isDead)
+                if (_boss.isDead)
                 {
                     isPoisoned = false;
-                    powerUpUI.text = "";
+                    _powerUpUI.text = "";
                 }
-                health -= 5 * poisonMultiplier;
-                powerUpUI.color = Color.red;
-                powerUpUI.text = "Poisoned! x" + poisonMultiplier;
-                Debug.Log(poisonMultiplier);
-                healthText.text = health.ToString();
+                health -= 5 * _poisonMultiplier;
+                _powerUpUI.color = Color.red;
+                _powerUpUI.text = "Poisoned! x" + _poisonMultiplier;
+                Debug.Log(_poisonMultiplier);
+                _healthText.text = health.ToString();
             }
             yield return new WaitForSeconds(5);
         }
@@ -58,18 +60,18 @@ public class Player : MonoBehaviour
 
     public void TakePoisonDamage()
     {
-        if (poisonMultiplier == 0)
+        if (_poisonMultiplier == 0)
         {
             StartCoroutine(PoisonDamage());
             isPoisoned = true;
         }
-        poisonMultiplier++;
+        _poisonMultiplier++;
     }
 
     private void Movement()
     {
         var walkInput = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-        var currentSpeed = walkInput * speed;
+        var currentSpeed = walkInput * _speed;
         var moveVelocity = transform.TransformDirection(currentSpeed);
         if (Input.GetButtonDown("Jump") && _charController.isGrounded)
         {
@@ -97,12 +99,12 @@ public class Player : MonoBehaviour
     
     private IEnumerator SpeedPowerUp()
     {
-        speed = 12;
-        powerUpUI.color = Color.blue;
-        powerUpUI.text = "Speed UP!";
+        _speed = 12;
+        _powerUpUI.color = Color.blue;
+        _powerUpUI.text = "Speed UP!";
         yield return new WaitForSeconds(5);
-        speed = 8;
-        powerUpUI.text = "";
+        _speed = 8;
+        _powerUpUI.text = "";
     }
     
     private IEnumerator HealthPowerUp()
@@ -110,17 +112,17 @@ public class Player : MonoBehaviour
         if (health <= 80)
         {
             health += 20;
-            healthText.text = health.ToString();
+            _healthText.text = health.ToString();
         }
         else
         {
             health = 100;
-            healthText.text = health.ToString();
+            _healthText.text = health.ToString();
         }
-        powerUpUI.color = Color.green;
-        powerUpUI.text = "Health UP!";
+        _powerUpUI.color = Color.green;
+        _powerUpUI.text = "Health UP!";
         yield return new WaitForSeconds(5);
-        powerUpUI.text = "";
+        _powerUpUI.text = "";
     }
 
     public void ActivateSpeedPowerUp()
@@ -135,12 +137,13 @@ public class Player : MonoBehaviour
 
     public void TakeDamage()
     {
+        _audioSource.Play();
         health -= 20;
-        healthText.text = health.ToString();
-        checkAlive();
+        _healthText.text = health.ToString();
+        CheckAlive();
     }
 
-    private void checkAlive()
+    private void CheckAlive()
     {
         if (health <= 0)
         {
@@ -148,7 +151,7 @@ public class Player : MonoBehaviour
             {
                 _challengeMode.FinishChallenge();
                 health = 100;
-                healthText.text = health.ToString();
+                _healthText.text = health.ToString();
             }
             else
             {

@@ -44,7 +44,7 @@ public class SpawnManager : MonoBehaviour
             if (enemyCount < maxEnemyCount)
             {
                 yield return new WaitForSeconds(4);
-                Instantiate(enemyPrefab, randomSpawnPoint(true), enemyPrefab.transform.rotation);
+                Instantiate(enemyPrefab, RandomSpawnPoint(true), enemyPrefab.transform.rotation);
                 enemyCount++;
                 yield return new WaitForSeconds(5);
             }
@@ -61,8 +61,8 @@ public class SpawnManager : MonoBehaviour
         {
             if (ChallengeMode.challengeStart)
             {
-                yield return new WaitForSeconds(1);
-                enemySpawnList.Add(Instantiate(enemyPrefab, randomSpawnPoint(true), enemyPrefab.transform.rotation));
+                yield return new WaitForSeconds(2);
+                enemySpawnList.Add(Instantiate(enemyPrefab, RandomSpawnPoint(true), enemyPrefab.transform.rotation));
                 yield return new WaitForSeconds(2);
             }
             else
@@ -78,8 +78,8 @@ public class SpawnManager : MonoBehaviour
         {
             if (powerUpCount < maxPowerUpCount && ChallengeMode.challengeStart)
             {
-                powerUpList.Add(Instantiate(powerUpPrefab, randomSpawnPoint(false), powerUpPrefab.transform.rotation));
-                pickUpList.Add(Instantiate(magazinePrefab, randomSpawnPoint(false), powerUpPrefab.transform.rotation));
+                powerUpList.Add(Instantiate(powerUpPrefab, RandomSpawnPoint(false), powerUpPrefab.transform.rotation));
+                pickUpList.Add(Instantiate(magazinePrefab, RandomSpawnPoint(false), powerUpPrefab.transform.rotation));
                 powerUpCount++;
                 yield return new WaitForSeconds(9);
             }
@@ -90,7 +90,7 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
-    private Vector3 randomSpawnPoint(bool isEnemy)
+    private Vector3 RandomSpawnPoint(bool isEnemy)
     {
         Vector3 returnVector;
         if (isEnemy)
@@ -101,7 +101,7 @@ public class SpawnManager : MonoBehaviour
             }
             else
             {
-                returnVector =  new Vector3(Random.Range(0,50), enemyPrefab.transform.position.y, Random.Range(0, 50));
+                returnVector =  new Vector3(Random.Range(17,65), enemyPrefab.transform.position.y, Random.Range(17, 80));
             }
         }
         else

@@ -1,45 +1,52 @@
-using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class Enemy : MonoBehaviour
 {
-    private Player player;
-    private bool hasTarget;
-    private Vector3 startingPos;
-    private int rangeValue = 10;
-    private int health = 100 * NewGamePlus.level;
-    private bool isInChallenge;
-    private GameObject startMenu;
-    private ChallengeMode ChallengeMode;
+    private Player _player;
+    private bool _hasTarget;
+    private Vector3 _startingPos;
+    private int _rangeValue = 10;
+    public int health = 100 * NewGamePlus.level;
+    private bool _isInChallenge;
+    private GameObject _startMenu;
+    private ChallengeMode _challengeMode;
+    public AudioClip deathSound;
+    private AudioSource _audioSource;
+    public AudioClip attackSound;
+    private bool _playOnceAttack = true;
+    private MeshRenderer _meshRenderer;
+    private BoxCollider _boxCollider;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        startMenu = GameObject.Find("Canvas");
-        player = GameObject.Find("Player").GetComponent<Player>();
-        startingPos = transform.position;
+        _boxCollider = GetComponent<BoxCollider>();
+        _meshRenderer = GetComponent<MeshRenderer>();
+        _startMenu = GameObject.Find("Canvas");
+        _player = GameObject.Find("Player").GetComponent<Player>();
+        _audioSource = GetComponent<AudioSource>();
+        _startingPos = transform.position;
         StartCoroutine(Patrol());
         StartCoroutine(AttackInRange());
-        ChallengeMode = GameObject.Find("challenge_start").GetComponent<ChallengeMode>();
+        _challengeMode = GameObject.Find("challenge_start").GetComponent<ChallengeMode>();
         if (transform.position.x is > 67 and < 115 && transform.position.z is > 71 and < 111)
         {
-            isInChallenge = true;
+            _isInChallenge = true;
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (isInChallenge)
+        if (_isInChallenge)
         {
             ChaseInChallenge();
         }
         else
         {
-            lookForTarget();
+            LookForTarget();
         }
     }
 
@@ -47,9 +54,9 @@ public class Enemy : MonoBehaviour
     {
         while (true)
         {
-            if (Vector3.Distance(player.transform.position, transform.position) < 2.5 && player.isAlive)
+            if (Vector3.Distance(_player.transform.position, transform.position) < 2.5 && _player.isAlive)
             {
-                player.TakeDamage();
+                _player.TakeDamage();
                 yield return new WaitForSeconds(1);
             }
             else
@@ -59,29 +66,35 @@ public class Enemy : MonoBehaviour
         }
     }
     
-    private void lookForTarget()
+    private void LookForTarget()
     {
         if (!SpawnManager.gameOver)
         {
-            if (Vector3.Distance(player.gameObject.transform.position, transform.position) < rangeValue && player.isAlive)
+            if (Vector3.Distance(_player.gameObject.transform.position, transform.position) < _rangeValue && _player.isAlive)
             {
-                hasTarget = true;
-                rangeValue = 15;
-                Vector3 targetDirection = new Vector3(player.transform.position.x, transform.position.y,
-                    player.transform.position.z);
+                if (_playOnceAttack)
+                {
+                    _audioSource.PlayOneShot(attackSound);
+                    _playOnceAttack = false;
+                }
+                _hasTarget = true;
+                _rangeValue = 15;
+                var position = _player.transform.position;
+                Vector3 targetDirection = new Vector3(position.x, transform.position.y,
+                    position.z);
                 transform.LookAt(targetDirection);
                 Chase();
             }
             else
             {
-                if (hasTarget) 
+                if (_hasTarget) 
                 {
-                    rangeValue = 10;
-                    transform.position = Vector3.MoveTowards(transform.position, startingPos, 4 * Time.deltaTime);
-                    transform.LookAt(startingPos);
-                    if (hasTarget && transform.position == startingPos)
+                    _rangeValue = 10;
+                    transform.position = Vector3.MoveTowards(transform.position, _startingPos, 4 * Time.deltaTime);
+                    transform.LookAt(_startingPos);
+                    if (_hasTarget && transform.position == _startingPos)
                     {
-                        hasTarget = false;
+                        _hasTarget = false;
                     }
                 }
             }
@@ -92,10 +105,17 @@ public class Enemy : MonoBehaviour
     {
         if (!SpawnManager.gameOver)
         {
-            if (Vector3.Distance(player.transform.position, transform.position) < 50)
+            if (Vector3.Distance(_player.transform.position, transform.position) < 50)
             {
-                Vector3 targetDirection = new Vector3(player.transform.position.x, transform.position.y,
-                    player.transform.position.z);
+                if (_playOnceAttack)
+                {
+                    _audioSource.PlayOneShot(attackSound);
+                    _playOnceAttack = false;
+                }
+
+                var position = _player.transform.position;
+                Vector3 targetDirection = new Vector3(position.x, transform.position.y,
+                    position.z);
                 transform.LookAt(targetDirection);
                 Chase();
             }
@@ -107,11 +127,24 @@ public class Enemy : MonoBehaviour
         Vector3 enemyMove = new Vector3(0, 0, 4);
         if (!SpawnManager.gameOver)
         {
-            if (Vector3.Distance(player.transform.position, transform.position) > 2)
+            if (Vector3.Distance(_player.transform.position, transform.position) > 2)
             {
                 transform.Translate(enemyMove * Time.deltaTime);
             }
         }
+    }
+
+    private IEnumerator PlayDeathSound()
+    {
+        _audioSource.PlayOneShot(deathSound);
+        _meshRenderer.enabled = false;
+        _boxCollider.enabled = false;
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            Destroy(transform.GetChild(i).gameObject);
+        }
+        yield return new WaitForSeconds(2);
+        Destroy(gameObject);
     }
     
     public void TakeDamage(int damage)
@@ -119,15 +152,15 @@ public class Enemy : MonoBehaviour
         health -= damage;
         if (health <= 0)
         {
-            if (isInChallenge)
+            if (_isInChallenge)
             {
-                ChallengeMode.IncreaseScore();
-                Destroy(gameObject);
+                _challengeMode.IncreaseScore();
+                StartCoroutine(PlayDeathSound());
             }
             else
             {
                 SpawnManager.enemyCount--;
-                Destroy(gameObject);
+                StartCoroutine(PlayDeathSound());
             }
         }
     }
@@ -140,7 +173,7 @@ public class Enemy : MonoBehaviour
             yield return StartCoroutine(TurnRight());
             yield return StartCoroutine(MoveForward());
             yield return StartCoroutine(TurnLeft());
-            while (hasTarget)
+            while (_hasTarget)
             {
                 yield return null;
             }

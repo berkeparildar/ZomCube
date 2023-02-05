@@ -8,6 +8,7 @@ public class Boss : MonoBehaviour
     private int health = 1000 * NewGamePlus.level;
     private GameObject _canvas;
     public bool isDead;
+    public bool hasTarget;
     private Player _player;
     private GameObject _spawnManager;
     private MeshRenderer _meshRenderer;
@@ -42,6 +43,7 @@ public class Boss : MonoBehaviour
         {
             if (!_barrier.activeSelf && Vector3.Distance(_player.transform.position, transform.position) < 40)
             {
+                hasTarget = true;
                 if (_canvas.transform.GetChild(7).gameObject.activeSelf == false)
                 {
                     _canvas.transform.GetChild(7).gameObject.SetActive(true);
