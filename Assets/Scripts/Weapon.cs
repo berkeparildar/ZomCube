@@ -53,7 +53,7 @@ public class Weapon : MonoBehaviour
         else if (isShotgun)
         {
             _damage = 35;
-            bulletCount = 25;
+            bulletCount = 5;
             _bulletText.text = bulletCount.ToString();
         }
         else if (isMachineGun)

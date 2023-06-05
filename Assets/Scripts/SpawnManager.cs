@@ -2,39 +2,42 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random;
 
 public class SpawnManager : MonoBehaviour
 {
-    public static int enemyCount = 0;
-    private int maxEnemyCount = 5;
-    public static int powerUpCount = 0;
-    private int maxPowerUpCount = 5;
-    public static List<GameObject> enemySpawnList = new List<GameObject>();
-    public static List<GameObject> powerUpList = new List<GameObject>();
-    public static List<GameObject> pickUpList = new List<GameObject>();
+    public static int enemyCount;
+    [SerializeField] private int maxEnemyCount = 10;
+    public static int powerUpCount;
+    [SerializeField] private int maxPowerUpCount = 5;
+    private static Transform[] _spawnPositions;
+    public static readonly List<GameObject> EnemySpawnList = new List<GameObject>();
+    public static readonly List<GameObject> PowerUpList = new List<GameObject>();
+    public List<GameObject> pickUpList = new List<GameObject>();
     public GameObject enemyPrefab;
     public GameObject powerUpPrefab;
     public GameObject magazinePrefab;
     private Player _player;
-    private GameObject _nextLevelButton;
     public static bool gameOver;
-    private GameObject startMenu;
+    private GameObject _startMenu;
+    private Transform[] _challengePositions;
 
     // 67,71  115,71  115, 111
-    void Start()
+    private void Start()
     {
+        _spawnPositions = GameObject.Find("SpawnPoints").GetComponentsInChildren<Transform>();
+        _challengePositions = GameObject.Find("ChallengePoints").GetComponentsInChildren<Transform>();
         _player = GameObject.Find("Player").GetComponent<Player>();
-        _nextLevelButton = transform.GetChild(0).gameObject;
-        startMenu = GameObject.Find("Canvas");
+        _startMenu = GameObject.Find("Canvas");
         StartCoroutine(EnemySpawn());
         StartCoroutine(PowerUpSpawn());
         StartCoroutine(EnemyChallengeSpawn());
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        startScreenCheck();
+        StartScreenCheck();
     }
 
     private IEnumerator EnemySpawn()
@@ -62,7 +65,9 @@ public class SpawnManager : MonoBehaviour
             if (ChallengeMode.challengeStart)
             {
                 yield return new WaitForSeconds(2);
-                enemySpawnList.Add(Instantiate(enemyPrefab, RandomSpawnPoint(true), enemyPrefab.transform.rotation));
+                var enemy = Instantiate(enemyPrefab, RandomSpawnPoint(true), enemyPrefab.transform.rotation);
+                enemy.GetComponent<Enemy>().isInChallenge = true;
+                EnemySpawnList.Add(enemy);
                 yield return new WaitForSeconds(2);
             }
             else
@@ -78,8 +83,9 @@ public class SpawnManager : MonoBehaviour
         {
             if (powerUpCount < maxPowerUpCount && ChallengeMode.challengeStart)
             {
-                powerUpList.Add(Instantiate(powerUpPrefab, RandomSpawnPoint(false), powerUpPrefab.transform.rotation));
-                pickUpList.Add(Instantiate(magazinePrefab, RandomSpawnPoint(false), powerUpPrefab.transform.rotation));
+                var rotation = powerUpPrefab.transform.rotation;
+                PowerUpList.Add(Instantiate(powerUpPrefab, RandomSpawnPoint(false), rotation));
+                pickUpList.Add(Instantiate(magazinePrefab, RandomSpawnPoint(false), rotation));
                 powerUpCount++;
                 yield return new WaitForSeconds(9);
             }
@@ -97,27 +103,30 @@ public class SpawnManager : MonoBehaviour
         {
             if (ChallengeMode.challengeStart)
             {
-                returnVector =  new Vector3(Random.Range(67,115), enemyPrefab.transform.position.y, Random.Range(71, 111));
+                var random = Random.Range(0, _challengePositions.Length - 1);
+                returnVector = _challengePositions[random].position;
             }
             else
             {
-                returnVector =  new Vector3(Random.Range(17,65), enemyPrefab.transform.position.y, Random.Range(17, 80));
+                var random = Random.Range(0, _spawnPositions.Length - 1);
+                returnVector = _spawnPositions[random].position;
             }
         }
         else
         {
-            returnVector =  new Vector3(Random.Range(67,115), powerUpPrefab.transform.position.y, Random.Range(71, 111));
+            var random = Random.Range(0, _challengePositions.Length - 1);
+            returnVector = _challengePositions[random].position;
         }
         return returnVector;
     }
     
-    private void startScreenCheck()
+    private void StartScreenCheck()
     {
         if (!gameOver)
         {
             if (Vector3.Distance(_player.transform.position, transform.GetChild(0).position) < 2.5f)
             {
-                startMenu.transform.GetChild(10).gameObject.SetActive(true);
+                _startMenu.transform.GetChild(10).gameObject.SetActive(true);
                 if (Input.GetKeyDown(KeyCode.Return))
                 {
                     NewGamePlus.IncreaseLevel();
@@ -131,7 +140,7 @@ public class SpawnManager : MonoBehaviour
             }
             else
             {
-                startMenu.transform.GetChild(10).gameObject.SetActive(false);
+                _startMenu.transform.GetChild(10).gameObject.SetActive(false);
             }
         }
     }

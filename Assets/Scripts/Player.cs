@@ -16,16 +16,14 @@ public class Player : MonoBehaviour
     public bool isPoisoned;
     private int _poisonMultiplier = 0;
     private Boss _boss;
-    private AudioSource _audioSource;
     
 
     // Start is called before the first frame update
     void Start()
     {
         _boss = GameObject.Find("Boss").GetComponent<Boss>();
-        _audioSource = GetComponent<AudioSource>();
         _powerUpUI = GameObject.Find("power_up_UI").GetComponent<Text>();
-        _challengeMode = GameObject.Find("challenge_start").GetComponent<ChallengeMode>();
+        _challengeMode = GameObject.Find("ChallengeStart").GetComponent<ChallengeMode>();
         _healthText = GameObject.Find("health_Text").GetComponent<Text>();
         _charController = GetComponent<CharacterController>();
     }
@@ -51,7 +49,6 @@ public class Player : MonoBehaviour
                 health -= 5 * _poisonMultiplier;
                 _powerUpUI.color = Color.red;
                 _powerUpUI.text = "Poisoned! x" + _poisonMultiplier;
-                Debug.Log(_poisonMultiplier);
                 _healthText.text = health.ToString();
             }
             yield return new WaitForSeconds(5);
@@ -137,7 +134,6 @@ public class Player : MonoBehaviour
 
     public void TakeDamage()
     {
-        _audioSource.Play();
         health -= 20;
         _healthText.text = health.ToString();
         CheckAlive();

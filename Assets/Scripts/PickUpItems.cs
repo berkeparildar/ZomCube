@@ -61,7 +61,6 @@ public class PickUpItems : MonoBehaviour
     
     private IEnumerator DelayDestroy()
     {
-        _audioSource.Play();
         _meshRenderer.enabled = false;
         _boxCollider.enabled = false;
         yield return new WaitForSeconds(2);

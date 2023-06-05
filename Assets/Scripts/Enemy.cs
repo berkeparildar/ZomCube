@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public class Enemy : MonoBehaviour
@@ -9,38 +10,29 @@ public class Enemy : MonoBehaviour
     private Vector3 _startingPos;
     private int _rangeValue = 10;
     public int health = 100 * NewGamePlus.level;
-    private bool _isInChallenge;
-    private GameObject _startMenu;
+    public bool isInChallenge;
     private ChallengeMode _challengeMode;
-    public AudioClip deathSound;
-    private AudioSource _audioSource;
-    public AudioClip attackSound;
     private bool _playOnceAttack = true;
-    private MeshRenderer _meshRenderer;
     private BoxCollider _boxCollider;
 
     // Start is called before the first frame update
     private void Start()
     {
         _boxCollider = GetComponent<BoxCollider>();
-        _meshRenderer = GetComponent<MeshRenderer>();
-        _startMenu = GameObject.Find("Canvas");
         _player = GameObject.Find("Player").GetComponent<Player>();
-        _audioSource = GetComponent<AudioSource>();
-        _startingPos = transform.position;
         StartCoroutine(Patrol());
         StartCoroutine(AttackInRange());
-        _challengeMode = GameObject.Find("challenge_start").GetComponent<ChallengeMode>();
+        _challengeMode = GameObject.Find("ChallengeStart").GetComponent<ChallengeMode>();
         if (transform.position.x is > 67 and < 115 && transform.position.z is > 71 and < 111)
         {
-            _isInChallenge = true;
+            isInChallenge = true;
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (_isInChallenge)
+        if (isInChallenge)
         {
             ChaseInChallenge();
         }
@@ -74,7 +66,6 @@ public class Enemy : MonoBehaviour
             {
                 if (_playOnceAttack)
                 {
-                    _audioSource.PlayOneShot(attackSound);
                     _playOnceAttack = false;
                 }
                 _hasTarget = true;
@@ -109,7 +100,6 @@ public class Enemy : MonoBehaviour
             {
                 if (_playOnceAttack)
                 {
-                    _audioSource.PlayOneShot(attackSound);
                     _playOnceAttack = false;
                 }
 
@@ -136,8 +126,7 @@ public class Enemy : MonoBehaviour
 
     private IEnumerator PlayDeathSound()
     {
-        _audioSource.PlayOneShot(deathSound);
-        _meshRenderer.enabled = false;
+        transform.GetChild(0).gameObject.SetActive(false);
         _boxCollider.enabled = false;
         for (int i = 0; i < transform.childCount; i++)
         {
@@ -152,7 +141,7 @@ public class Enemy : MonoBehaviour
         health -= damage;
         if (health <= 0)
         {
-            if (_isInChallenge)
+            if (isInChallenge)
             {
                 _challengeMode.IncreaseScore();
                 StartCoroutine(PlayDeathSound());

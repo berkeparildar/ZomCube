@@ -23,7 +23,7 @@ public class Boss : MonoBehaviour
     void Start()
     {
         _canvas = GameObject.Find("Canvas");
-        _barrier = GameObject.Find("boss_barrier");
+        _barrier = GameObject.Find("BossBarrier");
         _meshRenderer = GetComponent<MeshRenderer>();
         _player = GameObject.Find("Player").GetComponent<Player>();
         _spawnManager = GameObject.Find("SpawnManager");
